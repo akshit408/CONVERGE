@@ -7,238 +7,283 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// In-Memory Data Store with Realistic Initial Mobility Data
+// In-Memory Data Store centered in VADODARA, GUJARAT, INDIA (22.3072, 73.1812) - 12 Fleet Vehicles
 let vehicles = [
-  // PUBLIC TRANSPORT
+  // PUBLIC TRANSPORT (VMC BUSES)
   {
     id: 'bus-p12',
-    name: 'Bus P-12',
+    name: 'VMC Bus 12',
+    code: 'P-12',
     category: 'public',
-    type: 'Standard Bus',
+    type: 'Standard City Bus',
     capacity: 50,
     occupancy: 28,
-    lat: 37.7749,
-    lng: -122.4194,
+    lat: 22.3072,
+    lng: 73.1812,
     heading: 90,
     speed: 34,
     status: 'ACTIVE',
     routeId: 'route-p1',
-    routeName: 'Route 12 - Downtown Express',
+    routeName: 'Route 12 - Vadodara Railway Station ↔ Alkapuri Express',
     driver: 'Marcus Vance',
     etaMinutes: 6,
     hasDeviation: false,
-    stops: ['Central Station', 'Financial District', 'City Hall', 'University Plaza']
+    lastUpdated: 'Just now',
+    stops: ['Vadodara Railway Station', 'Alkapuri Hub', 'Sayajigunj Circle', 'MSU Campus']
   },
   {
     id: 'bus-p24',
-    name: 'Bus P-24',
+    name: 'VMC Bus 24',
+    code: 'P-24',
     category: 'public',
-    type: 'Articulated Bus',
+    type: 'Articulated Metro Bus',
     capacity: 50,
     occupancy: 42,
-    lat: 37.7833,
-    lng: -122.4167,
+    lat: 22.3120,
+    lng: 73.1870,
     heading: 180,
     speed: 28,
     status: 'ACTIVE',
     routeId: 'route-p2',
-    routeName: 'Route 24 - Metro Corridor',
+    routeName: 'Route 24 - Sayajigunj ↔ Fatehgunj ↔ Nizampura',
     driver: 'Elena Rostova',
     etaMinutes: 4,
     hasDeviation: true,
     deviationDistance: '650m',
     deviationDuration: '4 min',
-    stops: ['Central Station', 'Market Street', 'Tech Hub', 'Westside Mall']
+    lastUpdated: 'Just now',
+    stops: ['Vadodara Railway Station', 'Sayajigunj Circle', 'Fatehgunj Flyover', 'Nizampura Circle']
   },
   {
     id: 'bus-p31',
-    name: 'Bus P-31',
+    name: 'VMC Bus 31',
+    code: 'P-31',
     category: 'public',
     type: 'Electric Transit Bus',
     capacity: 50,
     occupancy: 18,
-    lat: 37.7695,
-    lng: -122.4250,
+    lat: 22.3010,
+    lng: 73.1750,
     heading: 45,
     speed: 38,
     status: 'ACTIVE',
     routeId: 'route-p2',
-    routeName: 'Route 24 - Metro Corridor (Alt Express)',
+    routeName: 'Route 24 - Akota ↔ Old Padra Road Express',
     driver: 'David Chen',
     etaMinutes: 8,
     hasDeviation: false,
     recommended: true,
-    recommendationReason: 'Bus P-31 arrives 4 min later but has 57% lower crowd density.',
-    stops: ['Central Station', 'Market Street', 'Tech Hub', 'Westside Mall']
+    recommendationReason: 'VMC Bus 31 arrives 4 min later but has 57% lower crowd density.',
+    lastUpdated: 'Just now',
+    stops: ['Vadodara Railway Station', 'Alkapuri', 'Akota Stadium', 'Old Padra Road']
   },
 
-  // EMERGENCY VEHICLES
+  // EMERGENCY VEHICLES (GUJARAT REGISTRATION FORMAT)
   {
     id: 'amb-e01',
-    name: 'Ambulance E-01',
+    name: 'GJ 06 AB 1234',
+    code: 'GJ 06 AB 1234',
     category: 'emergency',
     type: 'Advanced Life Support Ambulance',
     capacity: 2,
     occupancy: 1,
-    lat: 37.7850,
-    lng: -122.4080,
+    lat: 22.3180,
+    lng: 73.1840,
     heading: 270,
     speed: 58,
     status: 'RESPONDING',
     routeId: 'route-e1',
-    routeName: 'Emergency Response Alpha',
+    routeName: 'SSG Hospital Priority Response',
     driver: 'Dr. Sarah Connor (Paramedic Lead)',
     etaMinutes: 3,
     hasDeviation: false,
-    emergencyTarget: '742 Evergreen Terrace (Cardiac Event)'
+    emergencyTarget: 'Alkapuri RC Dutt Road (Cardiac Incident Call)',
+    lastUpdated: 'Just now'
   },
   {
     id: 'amb-e02',
-    name: 'Ambulance E-02',
+    name: 'GJ 06 CD 4521',
+    code: 'GJ 06 CD 4521',
     category: 'emergency',
     type: 'Basic Life Support Ambulance',
     capacity: 2,
     occupancy: 0,
-    lat: 37.7600,
-    lng: -122.4350,
+    lat: 22.2980,
+    lng: 73.1680,
     heading: 120,
     speed: 0,
     status: 'AVAILABLE',
     routeId: 'route-e2',
-    routeName: 'Station 4 Standby',
+    routeName: 'Akota Emergency Standby',
     driver: 'James Holden',
     etaMinutes: 5,
-    hasDeviation: false
+    hasDeviation: false,
+    lastUpdated: 'Just now'
   },
   {
     id: 'fire-e03',
-    name: 'Fire Truck E-03',
+    name: 'GJ 06 EF 7812',
+    code: 'GJ 06 EF 7812',
     category: 'emergency',
-    type: 'Heavy Rescue Pumper',
+    type: 'Heavy Rescue Fire Pumper',
     capacity: 6,
     occupancy: 5,
-    lat: 37.7780,
-    lng: -122.4300,
+    lat: 22.3250,
+    lng: 73.2050,
     heading: 0,
     speed: 45,
     status: 'ASSIGNED',
     routeId: 'route-e3',
-    routeName: 'Zone 3 Industrial Dispatch',
+    routeName: 'Karelibaug Fire Station Standby',
     driver: 'Captain Robert Shaw',
     etaMinutes: 7,
-    hasDeviation: false
+    hasDeviation: false,
+    lastUpdated: 'Just now'
   },
 
-  // MUNICIPAL VEHICLES
+  // MUNICIPAL VEHICLES (VMC MUNICIPAL VEHICLES)
   {
     id: 'muni-m07',
-    name: 'Garbage Truck M-07',
+    name: 'VMC Municipal Vehicle 07',
+    code: 'M-07',
     category: 'municipal',
-    type: 'Automated Side Loader',
+    type: 'Automated Side Loader Garbage Truck',
     capacity: 10,
     occupancy: 7,
-    lat: 37.7650,
-    lng: -122.4100,
+    lat: 22.3200,
+    lng: 73.1920,
     heading: 190,
     speed: 18,
     status: 'WARNING',
     routeId: 'route-m1',
-    routeName: 'Municipal Solid Waste Zone A',
+    routeName: 'VMC Solid Waste Zone A (Fatehgunj)',
     driver: 'Carlos Mendez',
     etaMinutes: 15,
     hasDeviation: true,
     deviationDistance: '420m',
     completedTasks: 18,
     totalTasks: 24,
-    missedLocations: ['Oak & 5th St Bin #4']
+    missedLocations: ['Fatehgunj Sector 3 Bin #4'],
+    lastUpdated: 'Just now'
   },
   {
     id: 'muni-m11',
-    name: 'Water Tanker M-11',
+    name: 'VMC Municipal Vehicle 11',
+    code: 'M-11',
     category: 'municipal',
-    type: '10,000L Fleet Sprinkling Tanker',
+    type: '10,000L Fleet Water Tanker',
     capacity: 100,
     occupancy: 65,
-    lat: 37.7550,
-    lng: -122.4200,
+    lat: 22.2950,
+    lng: 73.2300,
     heading: 90,
     speed: 22,
     status: 'ACTIVE',
     routeId: 'route-m2',
-    routeName: 'Civic Park Irrigation Route',
+    routeName: 'Sayaji Baug Park Irrigation Route',
     driver: 'Arthur Pendelton',
     etaMinutes: 20,
     hasDeviation: false,
     completedTasks: 12,
     totalTasks: 15,
-    missedLocations: []
+    missedLocations: [],
+    lastUpdated: 'Just now'
   },
 
-  // EDUCATION - SCHOOL
+  // SCHOOL BUSES (VADODARA SCHOOLS)
   {
     id: 'school-sb07',
-    name: 'School Bus SB-07',
+    name: 'School Bus 07',
+    code: 'SB-07',
     category: 'school',
-    schoolName: 'St. Jude Academy',
+    schoolName: 'Nalanda International School',
     type: 'Type C School Bus',
     capacity: 35,
     occupancy: 22,
-    lat: 37.7710,
-    lng: -122.4400,
+    lat: 22.3150,
+    lng: 73.1600,
     heading: 135,
     speed: 26,
     status: 'WARNING',
     routeId: 'route-sb7',
-    routeName: 'Route 3 - Green Park Afternoon Drop-off',
+    routeName: 'Route 3 - Gotri ↔ Vasna Road Drop-off',
     driver: 'Thomas Miller',
     etaMinutes: 7,
     hasDeviation: true,
     deviationDistance: '650m',
     deviationDuration: '2m 14s',
-    upcomingStop: 'Green Park Stop',
-    assignedStudents: ['Emma Watson', 'Lucas Vance', 'Sophia Patel']
+    upcomingStop: 'Gotri Circle Stop',
+    assignedStudents: ['Emma Watson', 'Lucas Vance', 'Sophia Patel'],
+    lastUpdated: 'Just now'
+  },
+  {
+    id: 'school-sb08',
+    name: 'School Bus 08',
+    code: 'SB-08',
+    category: 'school',
+    schoolName: 'Podar International School Vadodara',
+    type: 'Type C School Bus',
+    capacity: 35,
+    occupancy: 19,
+    lat: 22.3080,
+    lng: 73.1950,
+    heading: 90,
+    speed: 30,
+    status: 'ACTIVE',
+    routeId: 'route-sb8',
+    routeName: 'Route 4 - Karelibaug ↔ Vadodara Station Loop',
+    driver: 'Robert Sterling',
+    etaMinutes: 9,
+    hasDeviation: false,
+    upcomingStop: 'Karelibaug Water Tank Stop',
+    assignedStudents: ['Alex Vance', 'Chloe Smith'],
+    lastUpdated: 'Just now'
   },
 
-  // EDUCATION - UNIVERSITY
+  // UNIVERSITY BUSES (VADODARA UNIVERSITIES)
   {
     id: 'uni-u01',
-    name: 'University Bus U-01',
+    name: 'University Bus 01',
+    code: 'U-01',
     category: 'university',
-    universityName: 'Metropolitan Tech University',
+    universityName: 'The Maharaja Sayajirao University of Baroda (MSU)',
     type: 'Campus Shuttle Electric Express',
     capacity: 40,
     occupancy: 31,
-    lat: 37.7790,
-    lng: -122.4480,
+    lat: 22.3140,
+    lng: 73.1890,
     heading: 270,
     speed: 32,
     status: 'ACTIVE',
     routeId: 'route-u1',
-    routeName: 'North Campus ↔ Quad Loop',
+    routeName: 'MSU Tech Faculty ↔ Main Quad Loop',
     driver: 'Rachel Adams',
     etaMinutes: 5,
     hasDeviation: false,
-    stops: ['North Dorms', 'Engineering Hub', 'Central Quad', 'Science Labs']
+    stops: ['MSU Main Gate', 'Faculty of Tech', 'Science Pavilion', 'Hostel Campus'],
+    lastUpdated: 'Just now'
   },
   {
     id: 'uni-u03',
-    name: 'University Bus U-03',
+    name: 'University Bus 03',
+    code: 'U-03',
     category: 'university',
-    universityName: 'Metropolitan Tech University',
+    universityName: 'GSFC University',
     type: 'Campus Shuttle Line B',
     capacity: 40,
     occupancy: 12,
-    lat: 37.7730,
-    lng: -122.4550,
+    lat: 22.3280,
+    lng: 73.1780,
     heading: 180,
     speed: 29,
     status: 'ACTIVE',
     routeId: 'route-u2',
-    routeName: 'South Housing ↔ Innovation Center',
+    routeName: 'Fatehgunj Housing ↔ GSFC Campus Quad',
     driver: 'Gregory House',
     etaMinutes: 11,
     hasDeviation: false,
-    stops: ['South Housing', 'Library Plaza', 'Athletic Complex', 'Innovation Hub']
+    stops: ['Fatehgunj Housing', 'Nizampura Plaza', 'GSFC Main Gate', 'Polytechnic Pavilion'],
+    lastUpdated: 'Just now'
   }
 ];
 
@@ -249,11 +294,11 @@ let alerts = [
     type: 'ROUTE_DEVIATION',
     category: 'school',
     vehicleId: 'school-sb07',
-    vehicleName: 'School Bus SB-07',
+    vehicleName: 'School Bus 07',
     timestamp: '2 minutes ago',
-    title: 'School Bus SB-07 Route Deviation Alert',
-    description: 'Vehicle SB-07 deviated 650 meters from assigned Route 3 near Green Park Sector.',
-    location: 'Lat: 37.7710, Lng: -122.4400',
+    title: 'School Bus 07 Route Deviation Alert',
+    description: 'Vehicle SB-07 deviated 650 meters from assigned Route 3 near Gotri Sector, Vadodara.',
+    location: 'Gotri Road, Vadodara',
     resolved: false
   },
   {
@@ -262,11 +307,11 @@ let alerts = [
     type: 'EMERGENCY_DISPATCH',
     category: 'emergency',
     vehicleId: 'amb-e01',
-    vehicleName: 'Ambulance E-01',
+    vehicleName: 'GJ 06 AB 1234',
     timestamp: '5 minutes ago',
     title: 'Active Emergency Response Unit Dispatched',
-    description: 'Ambulance E-01 responding to priority cardiac call at 742 Evergreen Terrace.',
-    location: 'Lat: 37.7850, Lng: -122.4080',
+    description: 'Ambulance GJ 06 AB 1234 responding to priority cardiac call at Alkapuri RC Dutt Road, Vadodara.',
+    location: 'RC Dutt Road, Alkapuri, Vadodara',
     resolved: false
   },
   {
@@ -275,11 +320,11 @@ let alerts = [
     type: 'HIGH_CROWD',
     category: 'public',
     vehicleId: 'bus-p24',
-    vehicleName: 'Bus P-24',
+    vehicleName: 'VMC Bus 24',
     timestamp: '12 minutes ago',
     title: 'High Passenger Capacity Threshold Reached',
-    description: 'Bus P-24 occupancy reached 84% (42/50 capacity). Smart recommendation pushed to passengers for Bus P-31.',
-    location: 'Market Street Hub',
+    description: 'VMC Bus 24 occupancy reached 84% (42/50 capacity). Smart recommendation pushed for VMC Bus 31.',
+    location: 'Sayajigunj Circle, Vadodara',
     resolved: false
   }
 ];
@@ -287,50 +332,51 @@ let alerts = [
 let routes = [
   {
     id: 'route-p1',
-    name: 'Route 12 - Downtown Express',
+    name: 'Route 12 - Vadodara Railway Station ↔ Alkapuri Express',
     category: 'public',
-    assignedVehicle: 'Bus P-12',
+    assignedVehicle: 'VMC Bus 12',
     schedule: 'Every 10 mins',
-    stops: ['Central Station', 'Financial District', 'City Hall', 'University Plaza'],
+    stops: ['Vadodara Railway Station', 'Alkapuri Hub', 'Sayajigunj Circle', 'MSU Campus'],
     status: 'NORMAL'
   },
   {
     id: 'route-p2',
-    name: 'Route 24 - Metro Corridor',
+    name: 'Route 24 - Sayajigunj ↔ Fatehgunj ↔ Nizampura',
     category: 'public',
-    assignedVehicle: 'Bus P-24 & Bus P-31',
+    assignedVehicle: 'VMC Bus 24 & VMC Bus 31',
     schedule: 'Every 8 mins',
-    stops: ['Central Station', 'Market Street', 'Tech Hub', 'Westside Mall'],
+    stops: ['Vadodara Railway Station', 'Sayajigunj Circle', 'Fatehgunj Flyover', 'Nizampura Circle'],
     status: 'DEVIATED'
   },
   {
     id: 'route-sb7',
-    name: 'Route 3 - Green Park Afternoon Drop-off',
+    name: 'Route 3 - Gotri ↔ Vasna Road Drop-off',
     category: 'school',
-    assignedVehicle: 'School Bus SB-07',
+    assignedVehicle: 'School Bus 07',
     schedule: 'Daily 15:30 Drop-off',
-    stops: ['St. Jude Academy', 'Maple Avenue', 'Green Park Stop', 'Sunset Heights'],
+    stops: ['Nalanda International School', 'Gotri Circle', 'Vasna Road', 'Sunset Heights'],
     status: 'DEVIATED'
   },
   {
     id: 'route-u1',
-    name: 'North Campus ↔ Quad Loop',
+    name: 'MSU Tech Faculty ↔ Main Quad Loop',
     category: 'university',
-    assignedVehicle: 'University Bus U-01',
+    assignedVehicle: 'University Bus 01',
     schedule: 'Continuous Shuttle (5 min loop)',
-    stops: ['North Dorms', 'Engineering Hub', 'Central Quad', 'Science Labs'],
+    stops: ['MSU Main Gate', 'Faculty of Tech', 'Science Pavilion', 'Hostel Campus'],
     status: 'NORMAL'
   }
 ];
 
-// Continuous Backend Vehicle Movement & Simulation Loop
+// Continuous Backend Vehicle Movement & Simulation Loop in Vadodara
 setInterval(() => {
   vehicles.forEach(v => {
-    // Subtle GPS Jitter & Movement
-    const deltaLat = (Math.random() - 0.48) * 0.0008;
-    const deltaLng = (Math.random() - 0.48) * 0.0008;
+    // Smooth GPS Movement inside Vadodara
+    const deltaLat = (Math.random() - 0.48) * 0.0004;
+    const deltaLng = (Math.random() - 0.48) * 0.0004;
     v.lat += deltaLat;
     v.lng += deltaLng;
+    v.lastUpdated = 'Just now';
 
     // Small ETA adjustments
     if (v.status === 'ACTIVE' || v.status === 'RESPONDING') {
@@ -345,7 +391,7 @@ setInterval(() => {
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', system: 'CONVERGE Mobility Backend', timestamp: new Date() });
+  res.json({ status: 'OK', system: 'CONVERGE Mobility Backend (Vadodara Region)', count: vehicles.length, timestamp: new Date() });
 });
 
 // GET all vehicles or filtered by category
@@ -410,6 +456,8 @@ app.post('/api/vehicles/:id/trigger-deviation', (req, res) => {
   vehicle.deviationDistance = '780m';
   vehicle.deviationDuration = 'Just now';
   vehicle.etaMinutes += 7;
+  vehicle.lat += 0.006;
+  vehicle.lng += 0.006;
 
   const newAlert = {
     id: `alt-${Date.now()}`,
@@ -420,8 +468,8 @@ app.post('/api/vehicles/:id/trigger-deviation', (req, res) => {
     vehicleName: vehicle.name,
     timestamp: 'Just now',
     title: `${vehicle.name} Route Deviation Detected`,
-    description: `${vehicle.name} has moved off its scheduled path by ${vehicle.deviationDistance}.`,
-    location: `Lat: ${vehicle.lat.toFixed(4)}, Lng: ${vehicle.lng.toFixed(4)}`,
+    description: `${vehicle.name} has moved off its scheduled Vadodara route path by ${vehicle.deviationDistance}.`,
+    location: `Vadodara Lat: ${vehicle.lat.toFixed(4)}, Lng: ${vehicle.lng.toFixed(4)}`,
     resolved: false
   };
 
@@ -491,13 +539,12 @@ app.post('/api/routes', (req, res) => {
 // Emergency Dispatch
 app.post('/api/emergency/dispatch', (req, res) => {
   const { locationAddress } = req.body;
-  // Find nearest available ambulance
   const availableAmbs = vehicles.filter(v => v.category === 'emergency' && v.status === 'AVAILABLE');
   const targetUnit = availableAmbs[0] || vehicles.find(v => v.id === 'amb-e02');
 
   if (targetUnit) {
     targetUnit.status = 'RESPONDING';
-    targetUnit.emergencyTarget = locationAddress || 'High-Priority Emergency Location';
+    targetUnit.emergencyTarget = locationAddress || 'Vadodara Emergency Location';
     targetUnit.speed = 62;
     targetUnit.etaMinutes = 4;
 
@@ -510,8 +557,8 @@ app.post('/api/emergency/dispatch', (req, res) => {
       vehicleName: targetUnit.name,
       timestamp: 'Just now',
       title: `${targetUnit.name} Dispatched`,
-      description: `Dispatched to ${targetUnit.emergencyTarget} with live priority sirens active.`,
-      location: locationAddress || 'City Emergency Sector',
+      description: `Dispatched to ${targetUnit.emergencyTarget} in Vadodara with live priority sirens active.`,
+      location: locationAddress || 'Vadodara Emergency Sector',
       resolved: false
     };
     alerts.unshift(dispatchAlert);
@@ -529,7 +576,7 @@ app.post('/api/emergency/dispatch', (req, res) => {
 
 // Parent School Auth
 app.post('/api/auth/school-parent', (req, res) => {
-  const { phone, otp, studentId } = req.body;
+  const { phone, otp, studentId, schoolName } = req.body;
   if (!phone || !otp) {
     return res.status(400).json({ error: 'Phone number and OTP are required' });
   }
@@ -541,9 +588,9 @@ app.post('/api/auth/school-parent', (req, res) => {
       studentId: studentId || 'STU-9924',
       name: 'Emma Vance',
       grade: 'Grade 5',
-      school: 'St. Jude Academy',
+      school: schoolName || 'Nalanda International School',
       assignedBusId: 'school-sb07',
-      busName: 'School Bus SB-07',
+      busName: 'School Bus 07',
       driverName: 'Thomas Miller'
     }
   });
@@ -551,16 +598,16 @@ app.post('/api/auth/school-parent', (req, res) => {
 
 // University Student Auth
 app.post('/api/auth/university', (req, res) => {
-  const { email, studentId } = req.body;
+  const { email, studentId, universityName } = req.body;
   if (!email && !studentId) {
     return res.status(400).json({ error: 'University Email or Student ID required' });
   }
   res.json({
     success: true,
     studentName: 'Alex Rivera',
-    university: 'Metropolitan Tech University',
-    email: email || 'alex.rivera@metrotech.edu',
-    studentId: studentId || 'MTU-88401',
+    university: universityName || 'The Maharaja Sayajirao University of Baroda (MSU)',
+    email: email || 'alex.rivera@msubaroda.ac.in',
+    studentId: studentId || 'MSU-88401',
     favoriteBusId: 'uni-u01',
     assignedBuses: ['uni-u01', 'uni-u03']
   });
@@ -580,10 +627,10 @@ app.get('/api/analytics', (req, res) => {
       { hour: '20:00', passengers: 610 }
     ],
     crowdByRoute: [
-      { route: 'Route 12 (Downtown)', avgOccupancy: 56, capacity: 100 },
-      { route: 'Route 24 (Metro)', avgOccupancy: 84, capacity: 100 },
-      { route: 'Route 3 (School)', avgOccupancy: 63, capacity: 100 },
-      { route: 'Campus Shuttle U1', avgOccupancy: 78, capacity: 100 }
+      { route: 'Station Express', avgOccupancy: 56, capacity: 100 },
+      { route: 'Sayajigunj Line', avgOccupancy: 84, capacity: 100 },
+      { route: 'Gotri School Bus', avgOccupancy: 63, capacity: 100 },
+      { route: 'MSU Campus Shuttle', avgOccupancy: 78, capacity: 100 }
     ],
     emergencyResponseTimes: [
       { category: 'Cardiac / Medical', avgMinutes: 4.2 },
@@ -615,5 +662,5 @@ function getCrowdLevel(occupancy, capacity) {
 }
 
 app.listen(PORT, () => {
-  console.log(`🚀 CONVERGE Server running on http://localhost:${PORT}`);
+  console.log(`🚀 CONVERGE Server (Vadodara) running on http://localhost:${PORT}`);
 });

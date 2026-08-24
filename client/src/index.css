@@ -34,22 +34,19 @@
   animation: pulseGlow 2s infinite ease-in-out;
 }
 
-/* Custom Leaflet Map Styling */
-.leaflet-container {
-  width: 100%;
-  height: 100%;
-  border-radius: 0.75rem;
-  z-index: 10;
+/* Google Maps Container & InfoWindow Styling Overrides */
+.gm-style-iw {
+  padding: 0 !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15) !important;
 }
 
-.leaflet-popup-content-wrapper {
-  padding: 0px;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+.gm-style-iw-d {
+  overflow: hidden !important;
+  max-height: none !important;
 }
 
-.leaflet-popup-content {
-  margin: 0px;
-  width: 260px !important;
+.gm-style-iw-tc::after {
+  background: #FFFFFF !important;
 }

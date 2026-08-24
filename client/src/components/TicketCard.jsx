@@ -3,15 +3,15 @@ import { Ticket, QrCode, ArrowUpRight, ArrowDownLeft, CheckCircle2, RefreshCw } 
 import { useMobility } from '../context/MobilityContext';
 import { CrowdIndicator } from './CrowdIndicator';
 
-export const TicketCard = ({ targetBusId = 'bus-p24' }) => {
+export const TicketCard = ({ targetBusId = 'VMC Bus 24' }) => {
   const { vehicles, boardTicket, exitTicket } = useMobility();
   const currentBus = vehicles.find(v => v.id === targetBusId) || vehicles[0] || { occupancy: 42, capacity: 50, name: 'Bus P-24' };
   
   const [ticketDetails] = useState({
     ticketId: 'CNV-8942-TK',
-    passengerName: 'Alex Vance',
-    boardingStop: 'Central Station',
-    destinationStop: 'University Plaza',
+    passengerName: 'Akash Limbachiya',
+    boardingStop: 'Parul University',
+    destinationStop: 'Vadodara Railway Station',
     time: '14:25 PM',
     busName: currentBus.name
   });
