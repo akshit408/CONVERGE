@@ -279,6 +279,8 @@ const INITIAL_VADODARA_VEHICLES = [
   }
 ];
 
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+
 const MobilityContext = createContext();
 
 export const MobilityProvider = ({ children }) => {
@@ -317,9 +319,9 @@ export const MobilityProvider = ({ children }) => {
   const fetchData = async () => {
     try {
       const [vRes, aRes, rRes] = await Promise.all([
-        fetch('/api/vehicles'),
-        fetch('/api/alerts'),
-        fetch('/api/routes')
+        fetch(`${API_BASE}/api/vehicles`),
+        fetch(`${API_BASE}/api/alerts`),
+        fetch(`${API_BASE}/api/routes`)
       ]);
 
       if (vRes.ok) {
@@ -358,7 +360,7 @@ export const MobilityProvider = ({ children }) => {
   // Board Ticket Action (+1 Occupancy)
   const boardTicket = async (vehicleId) => {
     try {
-      const res = await fetch(`/api/vehicles/${vehicleId}/ticket/board`, { method: 'POST' });
+      const res = await fetch(`${API_BASE}/api/vehicles/${vehicleId}/ticket/board`, { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
         showToast(data.message, 'success');
@@ -379,7 +381,7 @@ export const MobilityProvider = ({ children }) => {
   // Exit Ticket Action (-1 Occupancy)
   const exitTicket = async (vehicleId) => {
     try {
-      const res = await fetch(`/api/vehicles/${vehicleId}/ticket/exit`, { method: 'POST' });
+      const res = await fetch(`${API_BASE}/api/vehicles/${vehicleId}/ticket/exit`, { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
         showToast(data.message, 'info');
@@ -400,7 +402,7 @@ export const MobilityProvider = ({ children }) => {
   // Trigger Deviation
   const triggerDeviation = async (vehicleId) => {
     try {
-      const res = await fetch(`/api/vehicles/${vehicleId}/trigger-deviation`, { method: 'POST' });
+      const res = await fetch(`${API_BASE}/api/vehicles/${vehicleId}/trigger-deviation`, { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
         showToast(`🚨 Route Deviation Alert triggered for ${data.vehicle.name}`, 'warning');
@@ -443,7 +445,7 @@ export const MobilityProvider = ({ children }) => {
   // Resolve Deviation
   const resolveDeviation = async (vehicleId) => {
     try {
-      const res = await fetch(`/api/vehicles/${vehicleId}/resolve-deviation`, { method: 'POST' });
+      const res = await fetch(`${API_BASE}/api/vehicles/${vehicleId}/resolve-deviation`, { method: 'POST' });
       if (res.ok) {
         showToast('Route deviation cleared. Vehicle on normal schedule.', 'success');
         fetchData();
@@ -460,7 +462,7 @@ export const MobilityProvider = ({ children }) => {
   // Emergency Dispatch
   const dispatchEmergency = async (locationAddress) => {
     try {
-      const res = await fetch('/api/emergency/dispatch', {
+      const res = await fetch(`${API_BASE}/api/emergency/dispatch`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ locationAddress })
@@ -479,7 +481,7 @@ export const MobilityProvider = ({ children }) => {
   // Resolve Alert
   const resolveAlert = async (alertId) => {
     try {
-      await fetch(`/api/alerts/${alertId}/resolve`, { method: 'POST' });
+      await fetch(`${API_BASE}/api/alerts/${alertId}/resolve`, { method: 'POST' });
       showToast('Alert marked as resolved.', 'success');
       fetchData();
     } catch (e) {
